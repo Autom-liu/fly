@@ -1,0 +1,99 @@
+
+body{
+    background-color: #000;
+}
+
+.wrap{
+    position: relative;
+    width: 350px;
+    height: 525px;
+    border: 10px solid #fff;
+    margin: 40px auto;
+}
+
+.wrap .scene{
+    display: none;
+    position: absolute;
+    top: 0;left: 0;
+    width: 100%;
+    height: 100%;
+    background-repeat: repeat-y;
+    z-index: -1;
+}
+
+#score{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 30px;
+    font-size: 14px;
+    text-align: center;
+    color: #fff;
+}
+
+.wrap .scene .myplane,.wrap .scene .bullet,.wrap .scene .enemy{
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.hide{display: none;}
+
+.wrap .begin .title{
+    padding: 50px 0;
+    text-align: center;
+    font-size: 36px;
+    color: #fff;
+    font-weight: bold;
+}
+
+.wrap .begin .btn-mode .level{
+    width: 150px;
+    margin: 40px auto;
+    line-height: 30px;
+    text-align: center;
+    font-size: 20px;
+    background-color: #f5f5f5;
+    color: #333;
+    cursor: pointer;
+}
+
+.wrap .begin .btn-mode p.level4{
+    color: red;
+}
+
+.end{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    margin-top: 125px;
+}
+
+.end .score-show,.end .rank-show{
+    padding: 24px 0;
+    font-size: 24px;
+    line-height: 2em;
+    text-align: center;
+    color: #fff;
+}
+
+.end .score-show span{
+    color: #cf0404;
+}
+
+.end .rank-show span{
+    color: #f0740e;
+}
+
+.end .restart{
+    width: 120px;
+    height: 40px;
+    margin: 0 auto;
+    font-size: 18px;
+    line-height: 40px;
+    text-align: center;
+    color: #fff;
+    background-color: #12ccec;
+    cursor: pointer;
+}
