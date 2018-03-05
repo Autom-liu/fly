@@ -86,14 +86,19 @@ body{
     color: #f0740e;
 }
 
-.end .restart{
+.end .btn{
     width: 120px;
     height: 40px;
-    margin: 0 auto;
+    margin: 24px auto;
     font-size: 18px;
     line-height: 40px;
     text-align: center;
     color: #fff;
     background-color: #12ccec;
     cursor: pointer;
+}
+
+.end .top-up{
+    width: 180px;
+    color: red;
 }
