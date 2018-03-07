@@ -41,7 +41,7 @@
         addmaxPoint: function(){this.score += 20;return this;},
         subPoint: function(){this.score--;return this;},
         submaxPoint: function(){this.score -=20;return this;},
-        display: function(){$(topScore).html(this.score);},
+        display: function(){$('#score').html(this.score);},
         clearPoint: function(){this.score = 0;},
         getPoint: function(){return this.score;},
         getRankText: function() {return ['菜的抠脚','初级驾机员','初级飞机师','高级老司机','职业老司机','打飞机专家','打飞机王者'][this.getRank()]},
@@ -65,10 +65,9 @@
         stopbg : true,
         collisionTimer1 : 0,
         initScene: function(){
-            $(scene).html('');
-            $(end).addClass('hide');
-            $(topScore).addClass('hide');
-            $(begin).removeClass('hide');
+            $scene.html('');
+            $end.add('#score').addClass('hide');
+            $begin.removeClass('hide');
             Scores.clearPoint();
             Scores.display();
         },
@@ -89,7 +88,7 @@
         },
         collisionToMyteam: function(enemy){
             this.overed = true;
-            document.removeEventListener('mousemove',planeMove);
+            $(document).off('mousemove');
             clearInterval(this.collisionTimer1);
             this.endShow();
         },
@@ -116,10 +115,10 @@
             }
         },
         endShow: function(){
-            $(end).removeClass('hide');
-            $(score).text(Scores.getPoint());
-            $(rank).text(Scores.getRankText());
-            restart.addEventListener('click',this.restartGame.bind(this));
+            $end.removeClass('hide');
+            $score.text(Scores.getPoint());
+            $rank.text(Scores.getRankText());
+            $restart.one('click',this.restartGame.bind(this));
         },
         bgMove: function(step){
             var curPos = 0;
@@ -127,17 +126,16 @@
             function bgMotion(){
                 if(this.started){
                     curPos+= step;
-                    $(scene).css('background-position-y',curPos);
+                    $scene.css('background-position-y',curPos);
                     requestAnimationFrame(bgMotion.bind(this));
                 }else{
-                    scene.setAttribute('style','');
+                    $scene.prop('style','');
                 }
             }
         },
         restartGame: function(){
             this.initScene();
             this.started = false;
-            removeEventListener('click',this.restartGame);
         },
         startGame: function(){
             this.started = true;
@@ -146,15 +144,15 @@
             enemyCollection = [];
             bulletCollection = [];
             ModeLevel.reset();
-            document.addEventListener('mousemove',planeMove);
+            $(document).on('mousemove',planeMove);
             shot();
             createEnemy();
             this.collisionTimer1 =  setInterval(this.collisionCheckGobal,50);
         },
         startScene: function(){
-            $(begin).addClass('hide');
-            $(topScore).removeClass('hide');
-            $(scene).css({display: 'block',backgroundImage: ModeLevel.getBackground()}).append(MyTeam.createPlane());
+            $begin.addClass('hide');
+            $('#score').removeClass('hide');
+            $scene.css({display: 'block',backgroundImage: ModeLevel.getBackground()}).append(MyTeam.createPlane());
             MyTeam.setPosition(event.clientX-outerLeft,event.clientY-outerTop);
             this.bgMove(2);    
         }
@@ -175,15 +173,15 @@
             imgPlane.height = height;
             this.width = width;
             this.height = height;
-            this.myPlane = imgPlane;
-            $(this.myPlane).addClass('myplane');
-            return imgPlane;
+            this.myPlane = $(imgPlane);
+            this.myPlane.addClass('myplane');
+            return $(imgPlane);
         },
         setPosition: function(left,top){
-            $(this.myPlane).css({left: left-this.width/2 + 'px',top: top-this.height/2 + 'px'});
+            this.myPlane.css({left: left-this.width/2,top: top-this.height/2});
         },
         getPosition: function(){
-            return {left: this.myPlane.offsetLeft+this.width/2,top:this.myPlane.offsetTop}
+            return {left: this.myPlane.position().left+this.width/2,top:this.myPlane.position().top}
         }
     }
 
@@ -198,20 +196,20 @@
             this.stopped = false;
             this.width = width;
             this.height = height;
-            this.mybullet = mybullet;
-            $(this.mybullet).css({left:left-width/2 + 'px',top:top-height + 'px'});
-            $(this.mybullet).addClass('bullet');
+            this.mybullet = $(mybullet);
+            this.mybullet.css({left:left-width/2,top:top-height});
+            this.mybullet.addClass('bullet');
             bulletCollection.push(this);
     }
 
     Bullet.prototype = {
         constructor: Bullet,
         run: function(){
-            var top = this.mybullet.offsetTop;
+            var top = this.mybullet.position().top;
             //this.collisionCheck();
             if(top > -this.height && !this.stopped){
                 top += ModeLevel.getBulletSpeed();
-                $(this.mybullet).css('top',top + 'px');
+                this.mybullet.css('top',top);
                 requestAnimationFrame(this.run.bind(this));
             }else{
                 this.clear();
@@ -222,7 +220,7 @@
             return this;
         },
         getPosition: function(){
-            return {left : this.mybullet.offsetLeft,top: this.mybullet.offsetTop};
+            return this.mybullet.position();
         },
         clear:  function(){
             this.mybullet.remove();
@@ -260,9 +258,9 @@
         this.speed = speed;
         this.width = width;
         this.height = height;
-        this.enemy = enemy;
-        $(this.enemy).css({left:left-width/2 + 'px',top:top-height +'px' });
-        $(this.enemy).addClass('enemy');
+        this.enemy = $(enemy);
+        this.enemy.css({left:left-width/2,top:top-height});
+        this.enemy.addClass('enemy');
         enemyCollection.push(this);
     }
 
@@ -270,11 +268,11 @@
 	Enemy.prototype = {
 		constructor: Enemy,
 		run: function(){
-            var top = this.enemy.offsetTop;
+            var top = this.enemy.position().top;
             !GameMananger.overed && this.collisionCheck();
 			if(top < height && this.isalive){
 				top += this.speed;
-				$(this.enemy).css('top',top + 'px');
+				this.enemy.css('top',top);
                 requestAnimationFrame(this.run.bind(this));
 			}else{
                 this.isalive&&GameMananger.disappearanceEnemy(this);
@@ -286,13 +284,12 @@
             enemyCollection = enemyCollection.filter((value)=> {return value != this});
         },
         getPosition: function(){
-            return {left : this.enemy.offsetLeft,top: this.enemy.offsetTop};
+            return this.enemy.position();
         },
         boom: function(){
             var src = this.boss? 'image/boom_big.png': 'image/boom_small.png';
-            this.enemy.src = src ;
-            fadeTo.call(this.enemy,500,0.2,(function(){this.clear();}).bind(this))
-
+            this.enemy.prop('src',src);
+            this.enemy.fadeTo(500,0.2,(function(){this.clear();}).bind(this))
         },
         stop: function(){
             this.isalive = false;
@@ -302,8 +299,8 @@
             if (this.isalive){
                 var eleft = this.getPosition().left;
                 etop = this.getPosition().top;
-                myLeft = MyTeam.myPlane.offsetLeft;
-                myTop = MyTeam.myPlane.offsetTop;
+                myLeft = MyTeam.myPlane.position().left;
+                myTop = MyTeam.myPlane.position().top;
                 mywidth = MyTeam.width;
                 myheight = MyTeam.height;
                 if(etop<myTop+myheight && etop+this.height >myTop && eleft<myLeft+mywidth && eleft+this.width>myLeft ){
@@ -315,32 +312,28 @@
         subHP: function(){return --this.hp;}
 	}
 
-    var wrap = document.getElementsByClassName('wrap')[0],
-        begin = wrap.getElementsByClassName('begin')[0],
-        scene = wrap .getElementsByClassName('scene')[0],
-        btnMode = wrap.getElementsByClassName('btn-mode')[0],
-        end = wrap .getElementsByClassName('end')[0],
-        score = end.querySelector('.score-show span'),
-        rank = end.querySelector('.rank-show span'),
-        restart = end.querySelector('.restart'),
-        topScore = document.getElementById('score'),
-        width = wrap.clientWidth,
-        height = wrap.clientHeight;
-        outerLeft = parseInt((document.body.clientWidth - width)/2),
-        outerTop = parseInt(getComputedStyle(wrap).borderTopWidth) + parseInt(getComputedStyle(wrap).marginTop),
+    var $wrap = $('.wrap'),
+        $begin = $('.wrap .begin'),
+        $scene = $('.wrap .scene'),
+        $btnMode = $('.wrap .begin .btn-mode'),
+        $end = $('.wrap .end'),
+        $score = $('.end .score-show span'),
+        $rank = $('.end .rank-show span'),
+        $restart = $('.wrap .end .restart'),
+        outerLeft = parseInt($wrap.css('margin-left')) + parseInt($wrap.css('border-width')),
+        outerTop = parseInt($wrap.css('margin-top')) + parseInt($wrap.css('border-width')),
         enemyCollection = [],
         bulletCollection = [],
+        width = $wrap.width(),
+        height = $wrap.height();
 
-        btnMode.addEventListener('click',startGame,false);
 
-        function startGame(event){
-            Array.prototype.forEach.call(this.children,function(ele,index){
-                if(event.target === ele){
-                    ModeLevel.level = index;
-                    GameMananger.startGame();
-                }
-            })
-                
+
+        $btnMode.on('click','.level',startGame);
+
+        function startGame(){
+            ModeLevel.level = $(this).index();
+            GameMananger.startGame();
         }
 
         function planeMove(event){
@@ -353,7 +346,7 @@
 
         function shot(){
             var bullet = new Bullet(MyTeam.getPosition().left,MyTeam.getPosition().top);
-            $(scene).append(bullet.mybullet);
+            $scene.append(bullet.mybullet);
             requestAnimationFrame(bullet.run.bind(bullet));
             !GameMananger.overed && setTimeout(shot,ModeLevel.getShotSpeed());
         }
@@ -362,28 +355,13 @@
             var enemy = parsePossiblity(ModeLevel.getBossPossiblity())? 
             new Enemy(parseInt(Math.random()*width),0,ModeLevel.getBossMoveSpeed(),true,70,70) 
             : new Enemy(parseInt(Math.random()*width),0,ModeLevel.getEnemyMoveSpeed(),false);
-            $(scene).append(enemy.enemy);
+            $scene.append(enemy.enemy);
             enemy.run();
             !GameMananger.overed && setTimeout(createEnemy,ModeLevel.getEnemyCreateSpeed());
         }
 
         function parsePossiblity(p){
             return Math.random() < p;
-        }
-
-        function fadeTo(duration,target,callback){
-            var step = (target-1)/duration * 20,
-                opc = getComputedStyle(this).opacity*1,
-                that = $(this);
-            requestAnimationFrame(function fade(){
-                if( Math.abs(target-opc) > Math.abs(step) ){
-                    opc += step;
-                    that.css('opacity',opc);
-                    requestAnimationFrame(fade);
-                }else{
-                    callback();
-                }
-            });
         }
 
  })
